@@ -86,3 +86,10 @@ int		get_1_line(const int fd, char **line)
 		return (get_1_line(fd, line));
 	}
 }
+
+int		get_next_line(const int fd, char **line)
+{
+	char	buf[BUFF_SIZE + 1];
+	
+	
+}
