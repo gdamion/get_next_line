@@ -6,7 +6,7 @@
 /*   By: gdamion- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/16 15:19:17 by gdamion-          #+#    #+#             */
-/*   Updated: 2019/01/09 19:04:39 by gdamion-         ###   ########.fr       */
+/*   Updated: 2019/01/10 14:44:17 by gdamion-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,82 +15,6 @@
 #include "get_next_line.h"
 
 /*
-int		get_next_line(const int fd, char **line)
-{
-	static int add;
-	int i;
-	int	rd;
-	int	not1st;
-
-	if (fd == -1 || !line) //проверяем входящие значения на ошибку или отсутствие
-		return (-1);
-	i = 0;
-	not1st = 0;
-	if (*line)
-{
-	while (*(line[i])) //считаем количество уже записанных символов
-		i++;
-}
-	if (i) //проверяем, было ли что-то в line до запуска функции, чтобы выставить '\n'
-		not1st = 1;
-	if (add)
-		not1st = 0;
-	add = 0;
-	if (!(*(line + i) = (char*)malloc(BUFF_SIZE + not1st))) //выделяем память под буфер
-		return (-1);
-	if (not1st) //ставим '\n', если строка не первая
-		*(line[i]) = '\n';
-	rd = read(fd, *(line + i + not1st), BUFF_SIZE); //читаем файл размера буфера
-	if (rd == -1)
-		return (-1);
-	else if (rd == 0)
-		return (0);
-	else if (rd < BUFF_SIZE)
-		return (1);
-	else //строка равна буферу или длиннее буфера, входим в рекурсию чтобы дописать ее 
-	{
-		add = 1;
-		get_next_line(fd, line);
-		return (1);
-	}
-}
-*/
-/*
-int		get_1_line(const int fd, char **line)
-{
-	static int add;
-	int	rd;
-	int i;
-	char buf[BUFF_SIZE + 1];
-	char *point;
-
-	i = 0;
-	if (fd == -1 || !line) //проверяем входящие значения на ошибку или отсутствие
-		return (-1);
-	point = *line + add;
-	if (!(point = (char*)malloc(BUFF_SIZE))) //выделяем память под буфер
-		return (-1);
-	rd = read(fd, point, BUFF_SIZE); //читаем файл размера буфера
-	if (rd == -1)
-		return (-1);
-	else if (rd == 0 || rd < BUFF_SIZE) //прочитано все
-		return (0);
-	else if (rd == BUFF_SIZE) //строка равна буферу или длиннее буфера, входим в рекурсию чтобы дописать ее 
-	{
-		add += rd;
-		if (get_1_line(fd, line) == 0)
-			return (0);
-		while (i < rd)
-		{
-			if (*(line[i]) != '\n')
-				return (1);
-			i++;
-		}
-		return (get_1_line(fd, line));
-	}
-}
-*/
-
 char	*ft_strjoin_mod(char *s1, char  *s2, int *n)
 {
 	char	*s_new;
@@ -119,15 +43,18 @@ char	*ft_strjoin_mod(char *s1, char  *s2, int *n)
 	s_new[i] = '\0';
 	return (s_new);
 }
-
-int	get_next_line(const int fd, char **line)
+*/
+/*
+// pick 1-st line. PROTOTYPE.
+int		get_next_line(const int fd, char **line)
 {
 	char	buf[BUFF_SIZE + 1];
 	int	rd;
 	int n;
 
+	ft_bzero(buf, BUFF_SIZE + 1); //заполняем буфер терминаторами
 	n = 1;
-	if (fd == -1 || !line) //проверяем входящие значения на ошибку или отсутствие
+	if (fd < 0 || !line) //проверяем входящие значения на ошибку или отсутствие
 		return (-1);
 	if (!(*line))
 	{
@@ -135,7 +62,6 @@ int	get_next_line(const int fd, char **line)
 		**line = '\0';
 	}
 	rd = read(fd, buf, BUFF_SIZE); //читаем
-	buf[BUFF_SIZE] = '\0'; //закупориваем буфер терминатором
 	printf("read: %d\n", rd);
 	printf("buf: %s\n", buf);
 	printf("line: %s\n", *line);
@@ -147,7 +73,8 @@ int	get_next_line(const int fd, char **line)
 	//Нет? -> Читаем заново. Предварительно переписав буфер в line полностью		Да? -> return 1 or 0, переписав буфер до \n
 	{
 		printf("read==buf entered\n\n");
-		*line = ft_strjoin_mod(*line, buf, &n);
+		if(!(*line = ft_strjoin_mod(*line, buf, &n)))
+			return (-1);
 		if (n)
 			return (1);
 		else
@@ -156,3 +83,64 @@ int	get_next_line(const int fd, char **line)
 	printf("PASSED tough PLACE 2\n\n");
 	return (-1);
 }
+*/
+
+int		get_one_line(char **line, const int fd, char **content, size_t *endl)
+{
+	char	buf[BUFF_SIZE + 1];
+	int	rd;
+	int endl_loc = 0;
+	int i = 0;
+	int start;
+	int len = 0;
+
+	if (!(*endl))
+		start = 0;
+	ft_bzero(buf, BUFF_SIZE + 1); //заполняем буфер терминаторами
+	if (!(*content))
+	{
+		ALLOC_MEM(*content, char*, 1);
+		**content = '\0';
+	}
+	rd = read(fd, buf, BUFF_SIZE); //читаем
+	printf("read: %d\n", rd);
+	printf("buf:\n%s\n", buf);
+	if (rd == -1 || !(*content = ft_strjoin(*content, buf))) //ошибка чтения и ошибка объединения
+		return (-1);
+	printf("line:\n%s\n", *content);
+	while (*content)
+	{
+		if (*content[i] == '\n')
+		{
+			endl_loc++;
+			if (endl_loc == *endl)
+				start = i;
+			else if (endl_loc == *endl + 1)
+			{
+				*line = ft_strsub(*content, start, len);
+				*endl++;
+				return (1);
+			}
+		}
+		else if (endl_loc == *endl)
+			len++;
+		i++;
+	}
+	*line = ft_strsub(*content, start, len);
+	if (endl_loc == *endl && (rd == 0 || rd < BUFF_SIZE))
+		return (0);
+	else
+		return (get_one_line(line, fd, content, endl));
+}
+
+/*
+int		get_next_line(const int fd, char **line)
+{
+	static t_list files[FD_STORE_SIZE];
+	
+	if (fd < 0 || !line) //проверяем входящие значения на ошибку или отсутствие
+		return (-1);
+
+	get_next_line(line, fd, &files[fd].content, &files[fd].content_size);
+}
+*/
