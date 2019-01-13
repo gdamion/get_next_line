@@ -6,40 +6,51 @@
 /*   By: gdamion- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/16 15:19:17 by gdamion-          #+#    #+#             */
-/*   Updated: 2019/01/13 11:51:08 by gdamion-         ###   ########.fr       */
+/*   Updated: 2019/01/13 18:30:26 by gdamion-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-static int	get_one_line(char **line, const int fd,
-						char **content, size_t *endl)
+static int    get_one_line(char **line, const int fd,
+                           char **content, int *endl)
 {
-	char	buf[BUFF_SIZE + 1];
-	int		rd;
-	size_t	i;
-
-	ft_bzero(buf, BUFF_SIZE + 1);
-	rd = read(fd, buf, BUFF_SIZE);
-	if (rd == -1 || !(*content = ft_strjoin(*content, buf)))
-		return (-1);
-	i = *endl + 1;
-	while ((*content)[i] != '\0')
-	{
-		if ((*content)[i] == '\n')
-			break ;
-		i++;
-	}
-	*line = ft_strsub(*content, *endl + 1, i - *endl - 1);
-	if (rd == 0 && i == *endl + 1 && (*content)[i] == '\0')
-		return (0);
-	else if ((*content)[i] == '\n' ||
-			((*content)[i] == '\0' && (rd == 0 || rd < BUFF_SIZE)))
-	{
-		*endl = i;
-		return (1);
-	}
-	return (get_one_line(line, fd, content, endl));
+    char    buf[BUFF_SIZE + 1];
+    int        rd;
+    int        i;
+    char    *tmp;
+    
+    //printf("\nendl: %d\n", *endl);
+    tmp = NULL;
+    ft_bzero(buf, BUFF_SIZE + 1);
+    rd = read(fd, buf, BUFF_SIZE);
+    //printf("rd: %d\n", rd);
+    if (rd == -1 || !(tmp = ft_strjoin(*content, buf)))
+        return (-1);
+    free(*content);
+    *content = tmp;
+   // printf("content:%s\n", *content);
+    i = *endl + 1;
+    while ((*content)[i] != '\0')
+    {
+        if ((*content)[i] == '\n')
+            break ;
+        i++;
+    }
+   // printf("i: %d\n", i);
+    if (!(tmp = ft_strsub(*content, *endl + 1, i - *endl - 1)))
+        return (-1);
+    free(*line);
+    *line = tmp;
+    if (rd == 0 && i == *endl + 1 && (*content)[i] == '\0')
+        return (0);
+    else if ((*content)[i] == '\n' ||
+             ((*content)[i] == '\0' && (rd == 0 || rd < BUFF_SIZE)))
+    {
+        *endl = i;
+        return (1);
+    }
+    return (get_one_line(line, fd, content, endl));
 }
 
 int			get_next_line(const int fd, char **line)
@@ -50,7 +61,11 @@ int			get_next_line(const int fd, char **line)
 	if (fd < 0 || !line || BUFF_SIZE < 1)
 		return (-1);
 	if (!(*line = ft_strnew(0)))
+	{
+		free(*line);
+		*line = NULL;
 		return (-1);
+	}
 	if (!(files[fd].content))
 	{
 		if (!(files[fd].content = ft_strnew(0)))
