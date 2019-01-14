@@ -6,7 +6,7 @@
 /*   By: gdamion- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/16 15:19:17 by gdamion-          #+#    #+#             */
-/*   Updated: 2019/01/13 18:30:26 by gdamion-         ###   ########.fr       */
+/*   Updated: 2019/01/14 11:20:07 by gdamion-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,32 +20,33 @@ static int    get_one_line(char **line, const int fd,
     int        i;
     char    *tmp;
     
-    //printf("\nendl: %d\n", *endl);
+    printf("\nendl: %d\n", *endl);
     tmp = NULL;
     ft_bzero(buf, BUFF_SIZE + 1);
     rd = read(fd, buf, BUFF_SIZE);
-    //printf("rd: %d\n", rd);
+    printf("rd: %d\n", rd);
     if (rd == -1 || !(tmp = ft_strjoin(*content, buf)))
         return (-1);
     free(*content);
     *content = tmp;
-   // printf("content:%s\n", *content);
+   printf("content:%s\n", *content);
     i = *endl + 1;
+    if (((*endl == -1 && (*content)[i] == '\0')) || (*endl != -1 && (*content)[*endl] == '\0'))
+        return (0);
     while ((*content)[i] != '\0')
     {
         if ((*content)[i] == '\n')
             break ;
         i++;
     }
-   // printf("i: %d\n", i);
+   printf("i: %d\n", i);
     if (!(tmp = ft_strsub(*content, *endl + 1, i - *endl - 1)))
         return (-1);
     free(*line);
     *line = tmp;
-    if (rd == 0 && i == *endl + 1 && (*content)[i] == '\0')
+    if (rd == 0 && (i == *endl + 1)  && (*content)[i] == '\0')
         return (0);
-    else if ((*content)[i] == '\n' ||
-             ((*content)[i] == '\0' && (rd == 0 || rd < BUFF_SIZE)))
+    else if ((*content)[i] == '\n' || ((*content)[i] == '\0' && (rd == 0 || rd < BUFF_SIZE)))
     {
         *endl = i;
         return (1);
