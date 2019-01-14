@@ -6,7 +6,7 @@
 /*   By: gdamion- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/16 15:20:04 by gdamion-          #+#    #+#             */
-/*   Updated: 2019/01/13 11:50:56 by gdamion-         ###   ########.fr       */
+/*   Updated: 2019/01/14 11:18:23 by gdamion-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,13 @@
 
 # include "libft/libft.h"
 
-# define BUFF_SIZE 200
+# define BUFF_SIZE 14
 # define FD_STORE_SIZE 5000
 
 typedef struct		s_files
 {
 	char			*content;
-	size_t			endl;
+	int				endl;
 }					t_files;
 
 int					get_next_line(const int fd, char **line);
