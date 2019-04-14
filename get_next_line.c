@@ -71,3 +71,37 @@ int			get_next_line(const int fd, char **line)
 	}
 	return (get_one_line(line, fd, &files[fd].content, &files[fd].endl));
 }
+
+// static int	get_one_line(char **line, const int fd, char **c, int *e)
+// {
+// 	char		buf[BUFF_SIZE + 1];
+// 	int			rd;
+// 	int			i;
+// 	char		*tmp;
+
+// 	ft_bzero(buf, BUFF_SIZE + 1);
+// 	rd = read(fd, buf, BUFF_SIZE);
+// 	if (rd == -1 || !(tmp = ft_strjoin(*c, buf)))
+// 		return (-1);
+// 	//printf("buf = %s|\n", buf);
+// 	//printf("rd = %d, endl = %d|\n", rd, *e);
+// 	gol_ops_one(c, &tmp);
+// 	// if (rd == 0 && (*e == -1 || (*e != -1 && (*c)[*e] == '\0')))
+// 	// 	return (0);
+// 	i = *e + 1;
+// 	gol_ops_two(&i, c);
+// 	if (rd == 0 && i == *e + 1)
+// 		return (0);
+// 	//printf("content = %s|\n", *c);
+// 	if ((*c)[i] == '\n' || ((*c)[i] == '\0' && rd < BUFF_SIZE))
+// 	{
+// 		if (!(tmp = ft_strsub(*c, *e + 1, i - *e - 1)))
+// 			return (-1);
+// 		gol_ops_one(line, &tmp);
+// 		*e = i;
+// 		//printf("new_endl = %d|\n", *e);
+// 		return (1);
+// 	}
+// 	return (get_one_line(line, fd, c, e));
+// }
+
